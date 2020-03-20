@@ -4,6 +4,8 @@ from openpyxl import Workbook
 import argparse
 import getpass
 import warnings
+import time
+import sys
 
 """
 Connect to BPO and get VNFs per device and their flavours
@@ -62,13 +64,16 @@ def get_call(bpo, api_call, *args, **kwargs):
     url = urlcore + callapi + filters
     print(f"URL : {url}")  # dbg, verify
 
-    req = requests.request("GET", url, headers=headers, verify=False)
-
-    if req.status_code == 200:
-        result = req.json()
-    else:
-        print("Some other error :) ")
-        print(req.status_code)
+    try:
+        req = requests.request("GET", url, headers=headers, verify=False)
+        if req.status_code == 200:
+            result = req.json()
+        else:
+            print("Some other error :) ")
+            print(req.status_code)
+            result = ''
+    except:
+        print(f"Exception {sys.exc_info()[0]} occured")
         result = ''
 
     return result
@@ -110,7 +115,7 @@ def find_vnf_flavour(name, cpu, mem):
 
     """
     # load VNF_flavour json
-    FLVdata = json.loads(open("FLV2.json", "r").read())
+    flv_data = json.loads(open("FLV2.json", "r").read())
     # depending on vnf name assign vnf model matrix
     if "vce" in name:
         vend = 1
@@ -122,7 +127,7 @@ def find_vnf_flavour(name, cpu, mem):
         return 'Unknown'  # return Unknown if no VNF found in name
 
     model = 'Unknown'
-    for item in FLVdata["Vendors"][vend]["VNF_models"]:
+    for item in flv_data["Vendors"][vend]["VNF_models"]:
         if cpu == item["vCPU"] and (item["Memory"] - 1 < (mem / 1024) < item["Memory"] + 1):
             model = item["model"]
 
@@ -146,10 +151,12 @@ def get_vnfs(devices, domain_id):
 
     # go through reachable devices and get vnfs
     for item in devices["items"]:
+        time.sleep(3)  # slow down request rate
         if not item["properties"]["communicationState"] == "AVAILABLE":
             continue
         devs = {"Device IP": item["properties"]["connection"]["hostname"],
                 "Device hostname": item["label"],
+                "Device desc": item["properties"]["city"],
                 "Device ID": item["id"],
                 "Device status": item["properties"]["communicationState"],
                 "VNFs": []
@@ -181,7 +188,7 @@ def cross_compare(dev_vnf_list):
 
     """
 
-    ra_domain = get_call(bpo_details, api_calls["Domains"], q='title:bpo-ra')
+    ra_domain = get_call(bpo_details, api_calls["Domains"], q=f'domainType:WorkflowManager')
     ns_info_prod = get_call(bpo_details, api_calls["Products_in_Domain"],
                             ra_domain["items"][0]["id"], q='title:Ns Info')
     instantiations = get_call(bpo_details, api_calls["Resources"], productId=ns_info_prod["items"][0]["id"])
@@ -191,19 +198,26 @@ def cross_compare(dev_vnf_list):
         if not instance["properties"]["instantiationState"] == "INSTANTIATED":
             continue
         # get operation for every instantiation
-        operations = get_call(bpo_details, api_calls["Resource_Operation"], instance["id"])
-        vim = operations["items"][0]["inputs"]["locationConstraints"][0]["locationConstraints"]["vims"][0]
-        params = operations["items"][0]["inputs"]["additionalParamsForVNF"]
+        time.sleep(3)  # slow down request rate
+        operations = get_call(bpo_details, api_calls["Resource_Operation"], instance["id"], q='interface:instantiateNs')
+
+        # skip iteration if unable to assign required vim/params data ... operations returned empty items list
+        try:
+            vim = operations["items"][0]["inputs"]["locationConstraints"][0]["locationConstraints"]["vims"][0]
+            params = operations["items"][0]["inputs"]["additionalParamsForVNF"]
+        except:
+            continue
         # cross compare with device list
         for device in dev_vnf_list:
             if device["Device ID"] == vim:
                 # cross compare with device vnfs
                 for vnf in device["VNFs"]:
                     for param in params:
-                        if vnf["VNF_name"].split("_", 2)[1] in param["additionalParam"]["keyValuePairs"][0]["value"]["flavourId"]:
-                            vnf["VNF_flv_initial"] = param["additionalParam"]["keyValuePairs"][0]["value"]["levelId"]
-                        elif vnf["VNF_name"].split("_", 2)[1] == "vrouter" and "vyatta" in param["additionalParam"]["keyValuePairs"][0]["value"]["flavourId"]:
-                            vnf["VNF_flv_initial"] = param["additionalParam"]["keyValuePairs"][0]["value"]["levelId"]
+                        levelid = param["additionalParam"]["keyValuePairs"][0]["value"]["levelId"]
+                        if vnf["VNF_name"].split("_", 2)[1] in levelid:
+                            vnf["VNF_flv_initial"] = levelid
+                        elif vnf["VNF_name"].split("_", 2)[1] == "vrouter" and "vyatta" in levelid:
+                            vnf["VNF_flv_initial"] = levelid
 
     return dev_vnf_list
 
@@ -218,25 +232,25 @@ def excel_out(dev_vnf_list):
     sheet.title = "RESULTS"
 
     sheet['B2'] = "Sitename"
-    sheet['C2'] = "Device IP"
-    sheet['D2'] = "VNF name"
-    sheet['E2'] = "VNF flavour calculated"
-    sheet['F2'] = "VNF flavour instantiated"
-
-    print(dev_vnf_list)
+    sheet['C2'] = "Device label"
+    sheet['D2'] = "Device IP"
+    sheet['E2'] = "VNF name"
+    sheet['F2'] = "VNF flavour calculated"
+    sheet['G2'] = "VNF flavour instantiated"
 
     i = 3
     for item in dev_vnf_list:
         for vnf in item["VNFs"]:
-            sheet['B{}'.format(i)] = item["Device hostname"]
-            sheet['C{}'.format(i)] = item["Device IP"]
-            sheet['D{}'.format(i)] = vnf["VNF_name"].split("_", 2)[1]
-            sheet['E{}'.format(i)] = vnf["VNF_flavour"]
-            sheet['F{}'.format(i)] = vnf["VNF_flv_initial"]
+            sheet['B{}'.format(i)] = item["Device desc"]
+            sheet['C{}'.format(i)] = item["Device hostname"]
+            sheet['D{}'.format(i)] = item["Device IP"]
+            sheet['E{}'.format(i)] = vnf["VNF_name"].split("_", 2)[1]
+            sheet['F{}'.format(i)] = vnf["VNF_flavour"]
+            sheet['G{}'.format(i)] = vnf["VNF_flv_initial"]
             i += 1
 
-    sheet.auto_filter.ref = "B{}:E{}".format(2, i - 1)
-    wb.save(filename="REPORT.xlsx")
+    sheet.auto_filter.ref = "B{}:G{}".format(2, i - 1)
+    wb.save(filename=f'REPORT_{bpo_details["bpo_tenant"]}.xlsx')
 
     return
 
@@ -272,7 +286,7 @@ def main():
     bpo_details["bpo_auth_token"] = get_auth_token(bpo_details)
 
     # get domain, products, device resources and vnfs
-    dnfvi_domain = get_call(bpo_details, api_calls["Domains"], q='title:dnfvi')
+    dnfvi_domain = get_call(bpo_details, api_calls["Domains"], q=f'domainType:urn:ciena:bp:domain:dnfvi')
     dnfvi_dev_prod = get_call(bpo_details, api_calls["Products_in_Domain"],
                               dnfvi_domain["items"][0]["id"], q='title:dnfvi Device')
     dnfvi_devices = get_call(bpo_details, api_calls["Resources"], productId=dnfvi_dev_prod["items"][0]["id"])
