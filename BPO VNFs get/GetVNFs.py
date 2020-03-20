@@ -191,7 +191,7 @@ def cross_compare(dev_vnf_list):
         if not instance["properties"]["instantiationState"] == "INSTANTIATED":
             continue
         # get operation for every instantiation
-        operations = get_call(bpo_details, api_calls["Resource_Operation"], instance["id"], q='interface:instantiateNs')
+        operations = get_call(bpo_details, api_calls["Resource_Operation"], instance["id"])
         vim = operations["items"][0]["inputs"]["locationConstraints"][0]["locationConstraints"]["vims"][0]
         params = operations["items"][0]["inputs"]["additionalParamsForVNF"]
         # cross compare with device list
