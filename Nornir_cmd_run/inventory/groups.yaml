@@ -1,0 +1,79 @@
+---                                                                           
+global:
+    data:
+        domain: global.local
+cisco:
+    username: ncrnoc
+    password: 123
+    platform: ios
+    data:
+      site: site
+      type: network_device
+    connection_options:
+      napalm:
+        extras:
+          timeout: 5
+          optional_args:
+            secret: en-secret
+            global_delay_factor: 4
+      netmiko:
+        extras:
+          blocking_timeout: 5
+          timeout: 5
+          global_delay_factor: 3
+          secret: en-secret
+Router:
+     username: ncr1
+     password: 123
+     platform: ios
+     connection_options:
+       netmiko:
+         extras:
+           blocking_timeout: 20
+           timeout: 10
+           global_delay_factor: 10
+           secret: en-secret
+     data:
+       site: site
+       type: network_device
+       connection_options:
+         napalm:
+           extras:
+             optional_args:
+               secret: en-secret
+vyatta:
+    username: attuser
+    password: 123
+    platform: vyos
+    connection_options:
+      netmiko:
+        extras:
+          blocking_timeout: 10
+          timeout: 5
+          global_delay_factor: 5
+    data:
+        type: network_device
+juniper:
+    username: username
+    password: 123
+    platform: junos
+    connection_options:
+      netmiko:
+        extras:
+          blocking_timeout: 10
+          timeout: 5
+          global_delay_factor: 5
+    data:
+      type: network_device
+SAOS:
+    username: su
+    password: 123
+    platform: ciena_saos
+    connection_options:
+      netmiko:
+        extras:
+          blocking_timeout: 10
+          timeout: 5
+          global_delay_factor: 5
+    data:
+        type: network_device

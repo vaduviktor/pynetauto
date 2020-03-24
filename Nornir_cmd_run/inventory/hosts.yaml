@@ -1,0 +1,61 @@
+---
+SW-3:
+ hostname: 10.0.100.7
+ groups:
+  - cisco
+ data:
+  ustomer: NCR_LAB
+SW-4:
+ hostname: 10.0.100.8
+ groups:
+  - cisco
+ data:
+  customer: NCR_LAB
+LAB-Ciena-1-vyatta:
+ hostname: 172.17.143.1
+ groups:
+  - vyatta
+ data:
+  customer: NCR_LAB
+LAB-Ciena-2-vyatta:
+ hostname: 172.17.143.9
+ groups:
+  - vyatta
+ data:
+  customer: NCR_LAB
+LAB-Ciena-3-vyatta:
+ hostname: 172.17.143.17
+ groups:
+  - vyatta
+ data:
+  customer: NCR_LAB
+LAB-Ciena-4-vyatta:
+ hostname: 172.17.143.25
+ groups:
+  - vyatta
+ data:
+  customer: NCR_LAB
+LAB-Ciena-1-SAOS:
+ hostname: 172.17.143.3
+ groups:
+  - SAOS
+ data:
+  customer: NCR_LAB
+LAB-Ciena-2-SAOS:
+ hostname: 172.17.143.11
+ groups:
+  - SAOS
+ data:
+  customer: NCR_LAB
+LAB-Ciena-3-SAOS:
+ hostname: 172.17.143.19
+ groups:
+  - SAOS
+ data:
+  customer: NCR_LAB
+LAB-Ciena-4-SAOS:
+ hostname: 172.17.143.27
+ groups:
+  - SAOS
+ data:
+  customer: NCR_LAB
