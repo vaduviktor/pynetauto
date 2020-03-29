@@ -4,8 +4,7 @@ import argparse
 import getpass
 import warnings
 import time
-import bpo
-
+from cnhelper import Bpo
 """
 Connect to BPO and get VNFs per device and their flavours
 
@@ -30,7 +29,7 @@ api_calls = {
 }
 
 
-def find_vnf_flavour(name, cpu, mem):
+def find_vnf_flavour(name, cpu, mem) -> str:
     """
     Load VNF_Flavours_TABLE json and cross compare it to input parameters in order to get VNF flavour
 
@@ -55,7 +54,7 @@ def find_vnf_flavour(name, cpu, mem):
     return model
 
 
-def get_vnfs(bpo):
+def get_vnfs(bpo) -> list:
     """
     Go through DNFVI devices, get VNFs and its flavour per device
 
@@ -110,7 +109,7 @@ def get_vnfs(bpo):
     return dev_vnf_list
 
 
-def cross_compare(bpo, dev_vnf_list):
+def cross_compare(bpo, dev_vnf_list) -> list:
     """
     Get all instantiations and cross compare with device/vnf list to get calculated vs instantiated flavours
 
@@ -217,7 +216,7 @@ def main():
     bpo_details["bpo_ip"] = args.bpo
     bpo_details["bpo_tenant"] = args.tenant
 
-    a = bpo.Bpo(bpo_details["bpo_ip"], bpo_details["bpo_user"], bpo_details["bpo_pass"], bpo_details["bpo_tenant"])
+    a = Bpo(bpo_details["bpo_ip"], bpo_details["bpo_user"], bpo_details["bpo_pass"], bpo_details["bpo_tenant"])
 
     vnf_list = get_vnfs(a)
     excel_out(cross_compare(a, vnf_list))

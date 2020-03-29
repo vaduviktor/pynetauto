@@ -4,7 +4,7 @@ SW-3:
  groups:
   - cisco
  data:
-  ustomer: NCR_LAB
+  customer: NCR_LAB
 SW-4:
  hostname: 10.0.100.8
  groups:
