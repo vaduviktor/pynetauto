@@ -3,7 +3,7 @@ global:
     data:
         domain: global.local
 cisco:
-    username: ncrnoc
+    username: username
     password: 123
     platform: ios
     data:
@@ -23,7 +23,7 @@ cisco:
           global_delay_factor: 3
           secret: en-secret
 Router:
-     username: ncr1
+     username: username
      password: 123
      platform: ios
      connection_options:
@@ -42,7 +42,7 @@ Router:
              optional_args:
                secret: en-secret
 vyatta:
-    username: attuser
+    username: username
     password: 123
     platform: vyos
     connection_options:

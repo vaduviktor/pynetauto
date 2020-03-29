@@ -1,12 +1,74 @@
+import time
+from netmiko import ConnectHandler, redispatch
 import requests
 import json
-import warnings
 import sys
 
 """
-BPO API calls
+Helper module for SAOS, Blue Planet, dnfvi host and dnfvi ui ( 10x )
 
 """
+
+
+class Saos:
+
+    def __init__(self, method: str, dev_ip, username: str, password: str):
+        self._ip = dev_ip
+        self._username = username
+        self._password = password
+        self._method = method
+
+    def __send_cmd(self):
+        pass
+
+    def int_status(self):
+        pass
+
+    def int_stats(self):
+        pass
+
+    def int_sfp_status(self):
+        pass
+
+    def int_sfp_detail(self):
+        pass
+
+    def module_status(self):
+        pass
+
+    def get_config(self):
+        pass
+
+
+class Dnfvi:
+
+    def __init__(self, method: str, dev_ip, username: str, password: str):
+        self._ip = dev_ip
+        self._username = username
+        self._password = password
+        self._method = method
+
+    def __send_cmd(self):
+        pass
+
+    def __redispatch_to_host(self):
+
+        pass
+
+    def get_nfvi(self):
+        pass
+
+    def get_sfs(self):
+        pass
+
+    def get_sffs(self):
+        pass
+
+    def host_cnfp_int_stat(self):
+        pass
+
+    def host_cnfp_int_reset(self):
+        pass
 
 
 class Bpo:
@@ -21,7 +83,7 @@ class Bpo:
         "Products": "/bpocore/market/api/v1/products"
     }
 
-    __bpo = {
+    _bpo = {
         "bpo_ip": '',
         "bpo_user": '',
         "bpo_pass": '',
@@ -30,13 +92,13 @@ class Bpo:
     }
 
     def __init__(self, bpo_ip, username, password, tenant):
-        self.__bpo["bpo_ip"] = bpo_ip
-        self.__bpo["bpo_user"] = username
-        self.__bpo["bpo_pass"] = password
-        self.__bpo["bpo_tenant"] = tenant
-        self.__bpo["bpo_auth_token"] = self.__get_auth_token__()
+        self._bpo["bpo_ip"] = bpo_ip
+        self._bpo["bpo_user"] = username
+        self._bpo["bpo_pass"] = password
+        self._bpo["bpo_tenant"] = tenant
+        self._bpo["bpo_auth_token"] = self.__get_auth_token()
 
-    def __apicall__(self, method: str, api_call: str, *args, **kwargs) -> dict:
+    def apicall(self, method: str, api_call: str, *args, **kwargs) -> dict:
         """
         Generl API call FN
 
@@ -53,7 +115,7 @@ class Bpo:
         else:
             callapi = api_call.format(args[0])
 
-        auth = f'Bearer {self.__bpo["bpo_auth_token"]}'
+        auth = f'Bearer {self._bpo["bpo_auth_token"]}'
         data = ''
         headers = {'accept': "application/json", 'Authorization': auth, 'Content-Type': 'application/json'}
 
@@ -69,7 +131,7 @@ class Bpo:
                     filters = filters + nextarg + f"{key}={value}"
                     nextarg = '&'
 
-        urlcore = f'https://{self.__bpo["bpo_ip"]}'
+        urlcore = f'https://{self._bpo["bpo_ip"]}'
         url = urlcore + callapi + filters
 
         try:
@@ -84,14 +146,14 @@ class Bpo:
 
         return res
 
-    def __get_auth_token__(self) -> str:
+    def __get_auth_token(self) -> str:
         """
         Get auth token
         """
         headers = {'accept': "application/json", 'Content-Type': "application/json"}
-        data = {"username": self.__bpo["bpo_user"], "password": self.__bpo["bpo_pass"],
-                "tenant_context": self.__bpo["bpo_tenant"]}
-        token = self.__apicall__('POST', self.api_calls["Token"], data=data, headers=headers)
+        data = {"username": self._bpo["bpo_user"], "password": self._bpo["bpo_pass"],
+                "tenant_context": self._bpo["bpo_tenant"]}
+        token = self.apicall('POST', self.api_calls["Token"], data=data, headers=headers)
         try:
             tok = token["Result"]["token"]
             print(tok)
@@ -102,26 +164,23 @@ class Bpo:
         return tok
 
     def get_domains(self, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Domains"], **filters)
+        return self.apicall('GET', self.api_calls["Domains"], **filters)
 
     def get_products_in_domain(self, arg: str, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Products_in_Domain"], arg, **filters)
+        return self.apicall('GET', self.api_calls["Products_in_Domain"], arg, **filters)
 
     def get_products(self, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Products"], **filters)
+        return self.apicall('GET', self.api_calls["Products"], **filters)
 
     def get_resources(self, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Resources"], **filters)
+        return self.apicall('GET', self.api_calls["Resources"], **filters)
 
     def get_specific_resource(self, arg: str, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Single_Resource"], arg, **filters)
+        return self.apicall('GET', self.api_calls["Single_Resource"], arg, **filters)
 
     def get_resource_operation(self, arg: str, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Resource_Operation"], arg, **filters)
+        return self.apicall('GET', self.api_calls["Resource_Operation"], arg, **filters)
 
     def get_resource_dependents(self, arg: str, **filters) -> dict:
-        return self.__apicall__('GET', self.api_calls["Resource Dependents"], arg, **filters)
-
-
-
+        return self.apicall('GET', self.api_calls["Resource Dependents"], arg, **filters)
 
