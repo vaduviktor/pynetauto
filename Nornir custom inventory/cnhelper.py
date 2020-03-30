@@ -19,25 +19,25 @@ class Saos:
         self._method = method
 
     def __send_cmd(self):
-        pass
+        return
 
     def int_status(self):
-        pass
+        return
 
     def int_stats(self):
-        pass
+        return
 
     def int_sfp_status(self):
-        pass
+        return
 
     def int_sfp_detail(self):
-        pass
+        return
 
     def module_status(self):
-        pass
+        return
 
     def get_config(self):
-        pass
+        return
 
 
 class Dnfvi:
@@ -49,26 +49,26 @@ class Dnfvi:
         self._method = method
 
     def __send_cmd(self):
-        pass
+        return
 
     def __redispatch_to_host(self):
 
-        pass
+        return
 
     def get_nfvi(self):
-        pass
+        return
 
     def get_sfs(self):
-        pass
+        return
 
     def get_sffs(self):
-        pass
+        return
 
     def host_cnfp_int_stat(self):
-        pass
+        return
 
     def host_cnfp_int_reset(self):
-        pass
+        return
 
 
 class Bpo:
@@ -162,6 +162,47 @@ class Bpo:
             print(token)
 
         return tok
+
+    def get_device_list(self) -> list:
+        """
+        Get dnfvi device list
+
+        :return : devlist[0] if i == 1 else devlist <---- if tenant = master it might have multiple dnfvi domains
+
+        """
+        devlist = []
+        i = 0
+        dnfvi_domain = self.get_domains(q=f'domainType:urn:ciena:bp:domain:dnfvi')["Result"]
+        # multiple domains found if tenant master ... for other tenants its only single iter
+        for item in dnfvi_domain["items"]:
+            domain_id = item["id"]
+            dnfvi_dev_prod = self.get_products_in_domain(domain_id, q='title:dnfvi Device')["Result"]
+            # this should return only one result in list but iter just in case
+            for prod in dnfvi_dev_prod["items"]:
+                dnfvi_devices = self.get_resources(productId=prod["id"])["Result"]
+                devlist.append(dnfvi_devices["items"])
+                i += 1
+
+        return devlist[0] if i == 1 else devlist
+
+    def get_vnf_list(self) -> list:
+        """
+        Get list of all VNFs
+        """
+        vnflist = []
+        dnfvi_domain = self.get_domains(q=f'domainType:urn:ciena:bp:domain:dnfvi')["Result"]
+        i = 0
+        # multiple domains found if tenant master ... for other tenants its only single iter
+        for item in dnfvi_domain["items"]:
+            domain_id = item["id"]
+            dnfvi_dev_prod = self.get_products_in_domain(domain_id, q='title:dnfvi VNF')["Result"]
+            # this should return only one result in list but iter just in case
+            for prod in dnfvi_dev_prod["items"]:
+                dnfvi_devices = self.get_resources(productId=prod["id"])["Result"]
+                vnflist.append(dnfvi_devices["items"].copy())
+                i += 1
+
+        return vnflist[0] if i == 1 else vnflist
 
     def get_domains(self, **filters) -> dict:
         return self.apicall('GET', self.api_calls["Domains"], **filters)
