@@ -5,70 +5,331 @@ import json
 import sys
 
 """
-Helper module for SAOS, Blue Planet, dnfvi host and dnfvi ui ( 10x )
+Helper module for saos, Blue Planet, dnfvi 
 
 """
 
 
 class Saos:
+    # for netmiko
+    _dev = {
+        'device_type': 'ciena_saos',
+        'ip': '',
+        'username': 'diag',
+        'password': 'ciena123',
+        'port': 22
+    }
 
-    def __init__(self, method: str, dev_ip, username: str, password: str):
-        self._ip = dev_ip
-        self._username = username
-        self._password = password
-        self._method = method
+    def __init__(self, dev_ip, username, password, port=22, method="ssh"):
+        self._dev["ip"] = dev_ip
+        self._dev["username"] = username
+        self._dev["password"] = password
+        self._dev["port"] = port
+        self._method = method  # ssh or netconf .. to be implemented
 
-    def __send_cmd(self):
-        return
+    def _send_cmd(self, cmd: str) -> str:
+        net_connect = ConnectHandler(**self._dev)
+
+        try:
+            res = net_connect.send_command(cmd)
+        except:
+            res = f"Exception {sys.exc_info()[0]} occured"
+
+        return res
 
     def int_status(self):
-        return
+        res = self._send_cmd("port show")
+        return res
 
-    def int_stats(self):
-        return
+    def int_stats(self, int_num):
+        res = self._send_cmd(f'port show port {int_num} statistics')
+        return res
 
     def int_sfp_status(self):
-        return
+        res = self._send_cmd("port xcvr show")
+        return res
 
-    def int_sfp_detail(self):
-        return
+    def int_sfp_detail(self, int_num):
+        res = self._send_cmd(f"port xcvr show port {int_num}")
+        return res
 
     def module_status(self):
-        return
+        res = self._send_cmd("module show module NFV")
+        return res
 
-    def get_config(self):
-        return
+    def get_config(self) -> str:
+        res = self._send_cmd("config show brief")
+        return res
 
 
 class Dnfvi:
+    api_calls = {
+        "Token": "/rest/auth/login",
+        "License_status": "/rest/license_mgmt/status/formatted",
+        "SFFS": "/rest/sffs/show",
+        "VNFs": "/rest/vnf/show",
+        "Files": "/rest/vnf/file_mgmt/show/formatted"
+    }
 
-    def __init__(self, method: str, dev_ip, username: str, password: str):
-        self._ip = dev_ip
-        self._username = username
-        self._password = password
-        self._method = method
+    # for netmiko
+    _dev = {
+        'device_type': 'terminal_server',
+        'ip': '',
+        'username': 'diag',
+        'password': 'asdf',
+        'port': 830
+    }
 
-    def __send_cmd(self):
-        return
+    _connection = ''
+    _host = False
+    _auth_token = ''
+    _method = 'ssh'
+    _tmp = ''
 
-    def __redispatch_to_host(self):
+    def __init__(self, dev_ip, username, password, **kwargs):
+        """
+        When initialising you have to specify ip, username, pass and if you want this to be ssh to host( host=True)
+        or REST call( method = REST )
+
+        examples :
+        REST : dev.Dnfvi(ip, username, pass, method='REST')
+        cn_core_host : dev.Dnfvi(ip, username, pass, host=True)
+        ui/valcli : dev.Dnfvi(ip, username, pass)
+
+
+        """
+        self._dev["ip"] = dev_ip
+        self._dev["username"] = username
+        self._dev["password"] = password
+        if kwargs:
+            for key, value in kwargs.items():
+                if key == "method":
+                    self._method = value
+                if key == 'host:':
+                    self._host = value
+        if self._method == 'REST':
+            self._auth_token = self._get_auth_token()
+            self._host = False
+        else:
+            try:
+                self._connect(self._host)
+            except:
+                print("Error connecting")
+
+    def __del__(self):
+        try:
+            self._connection.disconnect()
+        except:
+            print("No ssh session established")
+
+    def _send_cmd(self, cmd):  # wip
+        if self._host:
+            res = "ERROR, object initialized as host"
+        elif self._dev["device_type"] == "linux":
+            self._connection.send_command_timing("yp-shell")
+            res = self._connection.send_command_timing(cmd)
+        else:
+            res = self._connection.send_command(cmd)
+        return res
+
+    def _connect(self, host=False) -> None:
+        """
+        Initially connect as type terminal_server and based on prompt determine if its 10x or 18x system
+
+        10x gets you to valcli shell while 18x gets you to UI linux container shell ( for user diag ( non-netconf))
+
+        if host True "drill down" through shells, expect style, to cn_core_host and then set netmiko session as linux
+
+        """
+
+        try:
+            self._connection = ConnectHandler(**self._dev)
+        except:
+            print(f"Exception {sys.exc_info()} occured")
+
+        self._connection.write_channel("\r\n")
+        time.sleep(1)
+        self._connection.write_channel("\r\n")
+        time.sleep(1)
+        output = self._connection.read_channel()
+        print("Looking for prompt")
+        if ">" in output:
+            print("Found 10x ...\r\n")
+            if not host:
+                # redispatch to ciena_saos and disabling pager
+                redispatch(self._connection, device_type='ciena_saos')
+                print("disabling pager on 10x cli")
+                self._connection.send_command("set session more off")
+                print(self._connection.find_prompt())
+                self._tmp = 'ciena_saos'
+            else:
+                self._connection.write_channel("diag shell\r\n")
+                time.sleep(1)
+                # output = net_connect.read_channel()
+                self._connection.write_channel("ssh cn_core_host\r\n")
+                time.sleep(1)
+        else:
+            print("Found 18x ... in ui\n")
+            if not host:
+                redispatch(self._connection, device_type='linux')
+                print(self._connection.find_prompt())
+                self._tmp = 'linux'
+            else:
+                self._connection.write_channel("ssh cn_core_host\r\n")
+                time.sleep(1)
+
+        if host:
+            max_loops = 5
+            i = 1
+            while i <= max_loops:
+                output = self._connection.read_channel()
+                # Search for password pattern / send password
+                if 'yes/no' in output:
+                    self._connection.write_channel('yes\r\n')
+                    time.sleep(.5)
+                elif "password" in output:
+                    self._connection.write_channel(self._dev["password"] + '\r\n')
+                    time.sleep(.5)
+                    output = self._connection.read_channel()
+                    # Did we successfully login
+                    if 'NFV-FRU' in output:
+                        # print(output)
+                        break
+                self._connection.write_channel('\r\n')
+                time.sleep(.5)
+                i += 1
+            print("Doing redispatch to dev type linux")
+            redispatch(self._connection, device_type='linux')
+            self._tmp = 'linux'
+            print(self._connection.find_prompt())
 
         return
 
     def get_nfvi(self):
-        return
+        if self._host:
+            res = "ERROR, object initialized as host"
+        elif self._method == "REST":
+            res = "Not implemented yet"
+        elif self._tmp == "linux":
+            self._connection.send_command_timing("yp-shell")
+            res = self._connection.send_command_timing("sget /nfvi")
+            self._connection.send_command_timing("quit")
+        else:
+            res = self._connection.send_command('show nfvi')
+        return res
 
     def get_sfs(self):
-        return
+        if self._host:
+            res = "ERROR, object initialized as host"
+        elif self._method == "REST":
+            res = self.rest_apicall("GET", self.api_calls["VNFs"])
+        elif self._tmp == "linux":
+            self._connection.send_command_timing("yp-shell")
+            res = self._connection.send_command_timing("sget /sfs")
+            self._connection.send_command_timing("quit")
+        else:
+            res = self._connection.send_command("show nfvi sfs")
+        return res
 
     def get_sffs(self):
-        return
+        if self._host:
+            res = "ERROR, object initialized as host"
+        elif self._method == "REST":
+            res = self.rest_apicall("GET", self.api_calls["SFFS"])
+        elif self._tmp == "linux":
+            self._connection.send_command_timing("yp-shell")
+            res = self._connection.send_command_timing("sget /sffs")
+            self._connection.send_command_timing("quit")
+        else:
+            res = self._connection.send_command("show sffs")
+        return res
 
     def host_cnfp_int_stat(self):
-        return
+        if not self._host:
+            return "ERROR, not initialized as host"
+        cmd = 'sudo docker exec -it cn_cnfp_1 cnfp-dbg getif 0 all'
+        return self._connection.send_command(cmd)
 
     def host_cnfp_int_reset(self):
-        return
+        if not self._host:
+            return "ERROR, not initialized as host"
+        cmd = 'sudo docker exec -it cn_cnfp_1 cnfp-dbg getif 0 all reset'
+        return self._connection.send_command(cmd)
+
+    def rest_apicall(self, method: str, api_call: str, *args, **kwargs) -> dict:
+        """
+                Generl API call FN
+
+                :param method: GET, POST, PUT, PATCH, DELETE
+                :param api_call: api_calls[CALL] or str
+                :param args: arguments for api call
+                :param kwargs: filters for api call .. or custom data and headers for http request
+                :return: res dict {"status_code", "Result"}
+        """
+
+        filters = ''
+        if not args:
+            callapi = api_call
+        else:
+            callapi = api_call.format(args[0])
+
+        auth = f'Bearer {self._auth_token}'
+        data = ''
+        headers = {'accept': "application/json", 'Authorization': auth, 'Content-Type': 'application/json'}
+
+        if kwargs:
+            filters = "?"
+            nextarg = ''
+            for key, value in kwargs.items():
+                if key == 'data':
+                    data = json.dumps(value)
+                elif key == 'headers':
+                    headers = value
+                else:
+                    filters = filters + nextarg + f"{key}={value}"
+                    nextarg = '&'
+
+        urlcore = f'https://{self._dev["ip"]}'
+        url = urlcore + callapi + filters
+
+        try:
+            req = requests.request(method, url, data=data, headers=headers, verify=False)
+            res = {
+                "status_code": req.status_code,
+                "Result": req.json()
+            }
+        except:
+            print(f"Exception {sys.exc_info()[0]} occured")
+            res = {"status_code": sys.exc_info(), "Result": 'None'}
+
+        return res
+
+    def _get_auth_token(self) -> str:
+        """
+        Get auth token
+        """
+        headers = {'accept': "application/json", 'Content-Type': "application/x-www-form-urlencoded"}
+        data = {"username": self._dev["username"], "password": self._dev["password"]}
+        url = f'https://{self._dev["ip"]}{self.api_calls["Token"]}'
+
+        try:
+            req = requests.request('POST', url, data=data, headers=headers, verify=False)
+            res = {
+                "status_code": req.status_code,
+                "Result": req.json()
+            }
+        except:
+            print(f"Exception {sys.exc_info()[0]} occured")
+            res = {"status_code": sys.exc_info(), "Result": 'None'}
+
+        try:
+            tok = res["Result"]["token"]
+            print(tok)
+        except (TypeError, KeyError):
+            tok = 'None'
+            print(res)
+
+        return tok
 
 
 class Bpo:
@@ -224,4 +485,3 @@ class Bpo:
 
     def get_resource_dependents(self, arg: str, **filters) -> dict:
         return self.apicall('GET', self.api_calls["Resource Dependents"], arg, **filters)
-
