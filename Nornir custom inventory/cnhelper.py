@@ -105,7 +105,7 @@ class Dnfvi:
             for key, value in kwargs.items():
                 if key == "method":
                     self._method = value
-                if key == 'host:':
+                if key == 'host':
                     self._host = value
         if self._method == 'REST':
             self._auth_token = self._get_auth_token()
