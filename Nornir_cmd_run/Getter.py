@@ -15,14 +15,14 @@ Example usage :
 """
 
 cmd = {
-    "SAOS": {"sh_run": 'config show brief',
-             "sh_ver": 'system show version'},
-    "vyatta": {"sh_run": 'show configuration commands',
-               "sh_ver": 'show version'},
-    "cisco": {"sh_run": 'show run',
-              "sh_ver": 'show version'},
-    "juniper": {"sh_run": 'show configuration commands',
-                "sh_ver": 'show version'}
+    "SAOS": {'sh_run': 'config show brief',
+             'sh_ver': 'system show version'},
+    "vyatta": {'sh_run': 'show configuration commands',
+               'sh_ver': 'show version'},
+    "cisco": {'sh_run': 'show run',
+              'sh_ver': 'show version'},
+    "juniper": {'sh_run': 'show configuration commands',
+                'sh_ver': 'show version'}
 }
 
 
@@ -62,20 +62,25 @@ def get_command(task, opt):
     Custom nornir task : run getter for various or custom command for single dev type and write to file
 
     """
-    if task.host.groups == "cisco":
+    if task.host.groups[0] == "cisco":
         en = True
     else:
         en = False
 
-    print(f' For device {task.host} run : {cmd[task.host.groups[0]][opt.getter] if not opt.cmd else opt.cmd}')
+    if opt.cmd is None:
+        command = cmd[task.host.groups[0]][opt.getter[0]]
+        filename = f'{task.host}_{opt.getter[0]}.txt'
+    else:
+        command = opt.cmd
+        filename = f'{task.host}_custom.txt'
+
+    print(f' For device {task.host} run : {command}')
 
     a = task.run(name="Run command",
                  task=networking.netmiko_send_command,
-                 command_string=cmd[task.host.groups[0]][opt.getter] if not opt.cmd else opt.cmd,
+                 command_string=command,
                  enable=en)
     print(f' Writing result for : {task.host}')
-    custom = 'custom'
-    filename = f'{task.host}_{cmd[task.host.groups[0]][opt.getter] if not opt.cmd else custom}.txt'
     task.run(name="Write result to file", task=write_file, filename=f"results/{filename}", content=a.result)
 
     return
@@ -89,12 +94,12 @@ def main():
     filt_dev = devices.filter(F(groups__any=opt.type))  # to test : & or |  F(customer=opt.customer)
 
     # credentials input ... assumes you have adequate groups in groups.yaml file
-    for type in opt.type:
+    for platf in opt.type:
         try:
-            devices.inventory.groups[type].username = input(f'Enter {type} username : ')
-            devices.inventory.groups[type].password = getpass.getpass(f'Enter {type} user password: ')
-            if type == "cisco":
-                devices.inventory.groups[type].connection_options["netmiko"].extras["secret"] = getpass.getpass(f'Enter {type} enable password: ')
+            devices.inventory.groups[platf].username = input(f'Enter {platf} username : ')
+            devices.inventory.groups[platf].password = getpass.getpass(f'Enter {platf} user password: ')
+            if platf == "cisco":
+                devices.inventory.groups[platf].connection_options["netmiko"].extras["secret"] = getpass.getpass(f'Enter {platf} enable password: ')
         except (TypeError, KeyError):
             print("Error populating credentials, verify if adequate groups are in your groups.yaml file")
 

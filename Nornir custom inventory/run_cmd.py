@@ -4,18 +4,21 @@ from nornir.plugins.tasks import networking
 from nornir.plugins.tasks.files import write_file
 import argparse
 import getpass
+import warnings
+from cnhelper import Dnfvi
+import sys
 """
 Run command on various devices using Nornir custom inventory ( get devices from Blue Planet ) 
 
 """
 
 cmd = {
-    "SAOS": {"sh_run": 'config show brief',
-             "sh_ver": 'software show'},
-    "vyatta": {"sh_run": 'show configuration commands',
-               "sh_ver": 'show version'},
-    "DNFVI": {"sh_run": 'show run',
-              "sh_ver": 'show version'}
+    "SAOS": {'sh_run': 'config show brief',
+             'sh_ver': 'software show'},
+    "vyatta": {'sh_run': 'show configuration commands',
+               'sh_ver': 'show version'},
+    "DNFVI": {'sh_run': 'show run',
+              'sh_ver': 'show software'}
 }
 
 
@@ -56,25 +59,42 @@ def get_command(task, opt):
 
     """
 
-    print(f' For device {task.host} run : {cmd[task.host.groups[0]][opt.getter] if not opt.cmd else opt.cmd}')
+    if opt.cmd is None:
+        command = cmd[task.host.groups[0]][opt.getter[0]]
+        filename = f'{task.host}_{opt.getter[0] }.txt'
+    else:
+        command = opt.cmd
+        filename = f'{task.host}_custom.txt'
 
-    a = task.run(name="Run command",
-                 task=networking.netmiko_send_command,
-                 command_string=cmd[task.host.groups[0]][opt.getter] if not opt.cmd else opt.cmd)
-    print(f' Writing result for : {task.host}')
-    custom = 'custom'
-    filename = f'{task.host}_{cmd[task.host.groups[0]][opt.getter] if not opt.cmd else custom}.txt'
-    task.run(name="Write result to file", task=write_file, filename=f"results/{filename}", content=a.result)
+    print(f' For device {task.host} run : {command}')
+
+    if task.host.groups[0] == 'DNFVI':
+        dev = Dnfvi(task.host.hostname, task.host.username, task.host.password)
+        try:
+            res = dev._send_cmd(command)
+        except:
+            res = f"Exception {sys.exc_info()} occurred"
+    else:
+        a = task.run(name="Run command",
+                     task=networking.netmiko_send_command,
+                     command_string=command)
+        res = a.result
+
+    print(f' Writing result to file : results/{filename}')
+    task.run(name="Write result to file", task=write_file, filename=f"results/{filename}", content=res)
 
     return
 
 
 def main():
+    # suppress self-signed cert HTTPS warnings
+    warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+
     opt = check_options()
     bpo = {
         "ip": input('Enter bpo IP : '),
         "user": input('Enter bpo username : '),
-        "pass'": getpass.getpass(f'Enter bpo user password: '),
+        "pass": getpass.getpass(f'Enter bpo user password: '),
         "tenant": opt.customer if opt.customer else input(f'Enter bpo tenant : ')
     }
 
@@ -85,7 +105,7 @@ def main():
                                         "bpo_user": bpo["user"],
                                         "bpo_pass": bpo["pass"],
                                         "bpo_tenant": bpo["tenant"],
-                                        }
+                                    }
                                     })
     filt_dev = devices.filter(F(groups__any=opt.type))
 
