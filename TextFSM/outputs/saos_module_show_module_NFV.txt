@@ -1,0 +1,19 @@
+LABCNDEVICE04S> module show module NFV
+
++------ MODULE POWER STATUS ------+
+| Module   | Power Status         |
++----------+----------------------+
+| NFV      | on                   |
++----------+----------------------+
+
++--------------- MODULE NFV DEVICE ID --------------+
+| Parameter                 | Value                 |
++---------------------------+-----------------------+
+| PCA Part Num              | 170-0128-411          |
+| PCA Serial Num            | B9634947              |
+| Module MAC Address        | 74:87:bb:10:f8:00     |
+| Module Part Num           | 170-0128-901 /001     |
+| Module Serial Num         | M9295107              |
+| CLEI Code                 | IP3CADLSAA            |
+| Manufactured Date         | 28-05-2018            |
++---------------------------+-----------------------+

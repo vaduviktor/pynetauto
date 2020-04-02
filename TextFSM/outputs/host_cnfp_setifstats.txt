@@ -1,0 +1,49 @@
+root@cnfp:/# cnfp-dbg getifstats 0 9
+
+Extended Statistics on port 9 (device 0)
+--------------------------------------------------------------
+  rx_good_packets                                   177
+  tx_good_packets                                   144
+  rx_good_bytes                                     7434
+  tx_good_bytes                                     6048
+  rx_errors                                         0
+  tx_errors                                         0
+  rx_mbuf_allocation_errors                         0
+  rx_q0packets                                      177
+  rx_q0bytes                                        7434
+  rx_q0errors                                       0
+  tx_q0packets                                      144
+  tx_q0bytes                                        6048
+  rx_good_packets                                   177
+  rx_total_bytes                                    7434
+  rx_missed_pkts                                    0
+  rx_broadcast_packets                              76
+  rx_multicast_packets                              9
+  rx_unicast_packets                                92
+  rx_undersize_packets                              292
+  rx_size_64_packets                                0
+  rx_size_65_to_127_packets                         5
+  rx_size_128_to_255_packets                        4
+  rx_size_256_to_511_packets                        0
+  rx_size_512_to_1023_packets                       0
+  rx_size_1024_to_1522_packets                      0
+  rx_size_1523_to_max_packets                       0
+  rx_errors_with_bad_CRC                            0
+  rx_fragmented_errors                              0
+  rx_jabber_errors                                  0
+  rx_unknown_protos_packets                         0
+  tx_good_packets                                   144
+  tx_total_bytes                                    6048
+  tx_missed_pkts                                    0
+  tx_broadcast_packets                              220
+  tx_multicast_packets                              0
+  tx_unicast_packets                                18446744073709551540
+  tx_undersize_packets                              220
+  tx_size_64_packets                                0
+  tx_size_65_to_127_packets                         0
+  tx_size_128_to_255_packets                        0
+  tx_size_256_to_511_packets                        0
+  tx_size_512_to_1023_packets                       0
+  tx_size_1024_to_1522_packets                      0
+  tx_size_1523_to_max_packets                       0
+  tx_errors_with_bad_CRC                            0

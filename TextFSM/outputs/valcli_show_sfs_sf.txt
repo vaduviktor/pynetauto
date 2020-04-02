@@ -1,0 +1,65 @@
+NFV-FRU> show nfvi sfs sf vrouter
++----------------- SF INSTANCE -----------------+
+| KEY                       | VALUE             |
++---------------------------+-------------------+
+| SF Name                   | vrouter           |
+| SF Config                 |                   |
+|   SFO Metadata            |                   |
+|     VCPUs                 |                   |
+|       Group Name          | vrouter           |
+|       VCPU IDs            | 0, 1              |
+|       Thread Affinity     | shared            |
+|     CPU Config            | host-passthrough  |
+|     Memory (MB)           | 4096              |
+|   Network Interface       |                   |
+|     Name                  | vrouter-mgmt      |
+|     Network Type          | default           |
+|     MAC Address           | 52:54:00:38:0c:72 |
+|                           |                   |
+|     Name                  | vrouter-wan       |
+|     Logical Port          | vnet-0            |
+|     Network Type          | vhost             |
+|     MAC Address           | 52:54:00:6e:8d:7a |
+|                           |                   |
+|     Name                  | vrouter-lan       |
+|     Logical Port          | vnet-1            |
+|     Network Type          | vhost             |
+|     MAC Address           | 52:54:00:ce:03:8e |
+|                           |                   |
+|     Name                  | vrouter-lan2-ha   |
+|     Logical Port          | vnet-2            |
+|     Network Type          | vhost             |
+|     MAC Address           | 52:54:00:54:35:80 |
+|   Image Management        |                   |
+|     Image File Name       | vyatta_18_01      |
+| SF Operations             |                   |
+|   Operation State         | suspend           |
+| SF State                  |                   |
+|   Status                  | Running           |
+|   CPU Num                 | 2                 |
+|   CPU Time (ns)           | 862782140000000   |
+|   CPU User Time (ns)      | 3028910000000     |
+|   CPU System Time (ns)    | 231211830000000   |
+|   Mem Allocted (MB)       | 4096              |
+|   Mem Used (B)            | 4294967296        |
+|   Mem Swap In (B)         | 0                 |
+|   Mem Swap Out (B)        | 0                 |
+|   Num of Major Mem Faults | 2525184           |
+|   Num of Minor Mem Faults | 1047940374528     |
+|   Total Mem Available (B) | 4137287680        |
+|   Unused Memory (B)       | 1432211456        |
+|   Console                 |                   |
+|     VNC port num          | 5901              |
+|   Interfaces              |                   |
+|     Interface Name        | vrouter-mgmt      |
+|     Statistics            |                   |
+|       Rx Bytes            | 1325284255        |
+|       Rx Pkts             | 2603555           |
+|       Rx Drops            | 960               |
+|       Rx Errors           | 0                 |
+|       Tx Bytes            | 245140122         |
+|       Tx Pkts             | 1616588           |
+|       Tx Drops            | 0                 |
+|       Tx Errors           | 0                 |
++---------------------------+-------------------+
+NFV-FRU>

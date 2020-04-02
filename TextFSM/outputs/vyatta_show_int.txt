@@ -1,0 +1,9 @@
+attuser@USMOOGMRYFS01VMR:~$ show interfaces
+Codes: S - State, L - Link, u - Up, D - Down, A - Admin Down
+Interface        IP Address                        S/L  Description
+---------        ----------                        ---  -----------
+dp0s4            100.64.16.225/29                  u/u
+dp0s5            12.119.180.162/30                 u/u
+dp0s6            12.219.93.241/29                  u/u
+dp0s7            -                                 A/D
+vtun0            100.64.4.58                       u/u

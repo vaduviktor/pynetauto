@@ -1,0 +1,25 @@
+root@cnfp:/# cnfp-dbg getif 0 all
+
+dev  ifno  index    iface_name             drv_name               type     role  rate     duplex   link     rx          tx          rx-error    tx-error
+---  ----  -------  ---------------------  ---------------------  -------  ----  -------  -------  -------  ----------  ----------  ----------  ----------
+ 0      0   0       0000:02:00.0           net_ixgbe              gbe      data  1Gbps    full     up             4812        5066           0           0
+ 0      1   0       0000:02:00.1           net_ixgbe              gbe      data  1Gbps    full     up              435          14           0           0
+ 0      2   0       tap0                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      3   0       tap1                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      4   0       tap2                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      5   0       tap3                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      6   0       tap4                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      7   0       tap5                   net_tap                xgbe     data  10Gbps   full     up                0           0           0           0
+ 0      8   0       vnet-0                 vhost-net              vhost    data  10Gbps   full     up             5067        4076           0           2
+ 0      9   1       vnet-1                 vhost-net              vhost    data  10Gbps   full     up              124          76           0           0
+ 0     10   2       vnet-2                 vhost-net              vhost    data  10Gbps   full     up                0           0           0           0
+ 0     11   3       vnet-3                 vhost-net              vhost    data  10Gbps   full     up                0         263           0         232
+ 0     12   4       vnet-4                 vhost-net              vhost    data  10Gbps   full     up               80         124           0           0
+ 0     13   5       vnet-5                 vhost-net              vhost    data  10Gbps   full     up              510           0           0           0
+ 0     14   6       vnet-6                 vhost-net              vhost    data  10Gbps   full     up             1380          30           0           0
+ 0     15   7       vnet-7                 vhost-net              vhost    data  10Gbps   full     up              510           0           0           0
+ 0     16   8       vnet-8                 vhost-net              vhost    data  10Gbps   full     up                1           0           0           0
+ 0     17   9       vnet-9                 vhost-net              vhost    data  10Gbps   full     up                0           0           0           0
+ 0     18   10      vnet-10                vhost-net              vhost    data  10Gbps   full     up              510           0           0           0
+ 0     19   11      vnet-11                vhost-net              vhost    data  10Gbps   full     up               34        1365           0           0
+ 0     20   12      vnet-12                vhost-net              vhost    data  10Gbps   full     up               14           0           0           0

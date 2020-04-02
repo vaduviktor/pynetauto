@@ -1,0 +1,5 @@
+attuser@USMOOGMRYFS01VMR:~$ show arp
+IP Address         HW address        Dataplane  Controller Device
+100.64.16.227      74:87:bb:37:48:1f VALID      VALID      dp0s4
+100.64.16.226      1c:11:61:f4:3b:40 VALID      VALID      dp0s4
+12.219.93.242      52:54:00:6e:82:ca VALID      VALID      dp0s6

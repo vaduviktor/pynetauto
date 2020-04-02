@@ -1,0 +1,19 @@
+Value Installed_Package (.*\S+)
+Value Running_Package (.*\S+)
+Value Application_Build (.*\S+)
+Value Running_Kernel (.*\S+)
+Value Running_MIB_ver (.*\S+)
+Value Bank_Role (Running|Standby)
+Value Bank_Value ([AB])
+Value Bank_Package_ver (.*\S+)
+Value Bank_Status (.*ago)
+
+Start
+ ^\| Installed Package   : ${Installed_Package}.*\|
+ ^\| Running Package     : ${Running_Package}.*\|
+ ^\| Application Build   : ${Application_Build}.*\|
+ ^\| Running Kernel      : ${Running_Kernel}.*\|
+ ^\| Running MIB Version : ${Running_MIB_ver}.*\| -> Record
+ ^\| ${Bank_Role}.*: ${Bank_Value}.*\|
+ ^\| Bank package version: ${Bank_Package_ver}.*\|
+ ^\| Bank status         : ${Bank_Status}.*\| -> Record

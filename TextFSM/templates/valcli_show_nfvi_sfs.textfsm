@@ -1,0 +1,5 @@
+Value SF_Name (\S+)
+Value Status (\S+)
+
+Start
+ ^\|\s+${SF_Name}\s+\|\s+${Status}\s+\| -> Record

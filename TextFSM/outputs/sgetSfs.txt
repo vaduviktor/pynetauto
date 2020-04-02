@@ -1,0 +1,206 @@
+
+user@NFV-FRU> sget /sfs
+
+RPC Data Reply 2 for session 40 [default]:
+{
+  "yuma-netconf:rpc-reply": {
+    "yuma-netconf:data": {
+      "ciena-sf:sfs": {
+        "sf": [
+          {
+            "sf-name":"vce_3_2_0_v2",
+            "sfo": {
+              "sfo-metadata": {
+                "vcpus": [
+                  {
+                    "vcpu-group-name":"vce_3_2_0_v2",
+                    "vcpu-ids": [
+                      0,
+                      1
+                    ],
+                    "thread-affinity":"shared"
+                  }
+                ],
+                "memory":4096
+              },
+              "network-interface": [
+                {
+                  "name":"vnic0",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-3"
+                },
+                {
+                  "name":"vnic1",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-4"
+                },
+                {
+                  "name":"vnic2",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-8"
+                },
+                {
+                  "name":"vnic3",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-6"
+                },
+                {
+                  "name":"vnic4",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-5"
+                },
+                {
+                  "name":"vnic5",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-7"
+                }
+              ],
+              "console": {
+                "vnc-password":"****"
+              },
+              "image-mgmt": {
+                "image-ref":"vce_3_2_0"
+              }
+            },
+            "sf-operation": {
+              "state":"start"
+            },
+            "sf-state": {
+              "oper-state":"Running",
+              "num-cpus":2,
+              "cpu-time":"963335950000000",
+              "mem-allocated":"4096",
+              "mem-resident":"4294967296",
+              "console": {
+                "vnc-port":5901
+              },
+              "interfaces": [
+                {
+                  "name":"vnic0",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:e1:c2:7e"
+                },
+                {
+                  "name":"vnic1",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:97:cd:56"
+                },
+                {
+                  "name":"vnic2",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:79:08:62"
+                },
+                {
+                  "name":"vnic3",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:d9:e4:7f"
+                },
+                {
+                  "name":"vnic4",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:23:b0:c3"
+                },
+                {
+                  "name":"vnic5",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:61:37:88"
+                }
+              ],
+              "snapshots": {
+              }
+            }
+          },
+          {
+            "sf-name":"vrouter",
+            "sfo": {
+              "sfo-metadata": {
+                "vcpus": [
+                  {
+                    "vcpu-group-name":"vrouter",
+                    "vcpu-ids": [
+                      0,
+                      1
+                    ],
+                    "thread-affinity":"shared"
+                  }
+                ],
+                "cpu-config":"host-passthrough",
+                "memory":4096
+              },
+              "network-interface": [
+                {
+                  "name":"vrouter-mgmt",
+                  "network-type":"default"
+                },
+                {
+                  "name":"vrouter-wan",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-0"
+                },
+                {
+                  "name":"vrouter-lan",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-1"
+                },
+                {
+                  "name":"vrouter-lan2-ha",
+                  "network-type":"vhost",
+                  "logical-port":"vnet-2"
+                }
+              ],
+              "image-mgmt": {
+                "image-ref":"vyatta_18_01"
+              }
+            },
+            "sf-operation": {
+              "state":"start"
+            },
+            "sf-state": {
+              "oper-state":"Running",
+              "num-cpus":2,
+              "cpu-time":"1280506010000000",
+              "mem-allocated":"4096",
+              "mem-resident":"4294967296",
+              "mem-swap-in":"0",
+              "mem-swap-out":"0",
+              "mem-major-fault":"1931264",
+              "mem-minor-fault":"485522059264",
+              "mem-available":"4137287680",
+              "mem-unused":"1485553664",
+              "console": {
+                "vnc-port":5900
+              },
+              "interfaces": [
+                {
+                  "name":"vrouter-mgmt",
+                  "network-type":"default",
+                  "mac-address":"52:54:00:38:0c:72"
+                },
+                {
+                  "name":"vrouter-wan",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:6e:8d:7a"
+                },
+                {
+                  "name":"vrouter-lan",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:ce:03:8e"
+                },
+                {
+                  "name":"vrouter-lan2-ha",
+                  "network-type":"vhost",
+                  "mac-address":"52:54:00:54:35:80"
+                }
+              ],
+              "snapshots": {
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
+
+user@NFV-FRU>

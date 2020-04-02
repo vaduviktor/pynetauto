@@ -1,0 +1,24 @@
+LABCNDEVICE04S> port show
+
++--------------- PORT GLOBAL CONFIGURATION ----------------+
+|            Parameter             |       Value           |
++----------------------------------+-----------------------+
+| Rx Low Power Detect Admin State  | Disabled              |
++----------------------------------+-----------------------+
++-------------------------------------------------------------------------------+
+| Port Table        |           Operational Status            |  Admin Config   |
+|---------+---------+----+--------------+----+---+-------+----+----+-------+----|
+| Port    | Port    |    |  Link State  |    |   |       |Auto|    |       |Auto|
+| Name    | Type    |Link|   Duration   |XCVR|STP| Mode  |Neg |Link| Mode  |Neg |
+|---------+---------+----+--------------+----+---+-------+----+----+-------+----|
+| 1       |10/100/G | Up |  29d 6h 6m 4s|    |FWD|1000/FD| On |Ena |1000/FD| On |
+| 2       |10/100/G |Down|   0d 0h 0m 0s|    |Dis|       |    |Ena |1000/FD| Off|
+| 3       |10/100/G | Up |  83d23h10m48s|    |FWD|1000/FD| On |Ena |1000/FD| On |
+| 4       |10/100/G |Down|   0d 0h 0m 0s|    |Dis|       |    |Ena |1000/FD| On |
+| 5       | 100/G   |Down|   0d 0h 0m 0s|    |Dis|       |    |Ena |Auto/FD| On |
+| 6       | 100/G   |Down|   0d 0h 0m 0s|    |Dis|       |    |Ena |Auto/FD| On |
+| i1      | Gig     | Up |  28d 7h 7m48s|    |FWD|1000/FD| On |Ena |1000/FD| On |
+| i2      | Gig     | Up |  28d 7h 7m47s|    |FWD|1000/FD| On |Ena |1000/FD| On |
+| i3      | Gig     |Down|   0d 0h 0m 0s|    |Dis|       |    |Ena |1000/FD| On |
+| i4      | Gig     | Up |  28d 7h10m48s|    |FWD|1000/FD| On |Ena |1000/FD| On |
++---------+---------+----+--------------+----+---+-------+----+----+-------+----+

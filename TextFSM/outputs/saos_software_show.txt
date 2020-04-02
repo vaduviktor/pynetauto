@@ -1,0 +1,24 @@
+LABCNDEVICE04S> software show
++------------------------------------------------------------------------------+
+| Installed Package   : saos-06-17-01-0156                                     |
+| Running Package     : saos-06-17-01-0156                                     |
+| Application Build   : 17443                                                  |
+| Package Build Info  : Fri Dec 14 05:27:33 2018 autouser onxvpnjk02           |
+| Running Kernel      : 4.9.83                                                 |
+| Running MIB Version : 04-17-01-0022                                          |
+| Release Status      : GA                                                     |
++------------------------------------------------------------------------------+
+| Running bank        : A                                                      |
+| Bank package version: saos-06-17-01-0156                                     |
+| Bootloader version  : 17443                                                  |
+| Bootloader status   : valid                                                  |
+| Bank status         : valid (validated  2015hr  5min 39sec ago)              |
+| Standby bank        : B                                                      |
+| Bank package version: saos-06-17-01-0156                                     |
+| Bootloader version  : 17443                                                  |
+| Bootloader status   : valid                                                  |
+| Bank status         : valid (validated  2015hr  5min 18sec ago)              |
++------------------------------------------------------------------------------+
+| Last command file: unknown                                                   |
+| Last configuration file: unknown                                             |
++------------------------------------------------------------------------------+

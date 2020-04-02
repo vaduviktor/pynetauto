@@ -1,0 +1,13 @@
+Value Required PortName ([.\S]+)
+Value Required PortType (.+[Gg])
+Value Required Link (\s+Up\s+|Down)
+Value LinkStateDuration (.*s)
+Value STP (FWD|Dis)
+Value Mode ((\d+\/\w+)|(\s+))
+Value AutoNeg ((On|Off)|(\s+))
+Value AdminLink (.*)
+Value AdminMode (.*)
+Value AdminAutoNeg (.*)
+
+Start
+  ^\| ${PortName}.*\s+\|${PortType}\s+\|${Link}\|\s+${LinkStateDuration}.*${STP}.*\|${Mode}\|\s+${AutoNeg}\s+\|${AdminLink}\s\|${AdminMode}\|\s${AdminAutoNeg}\| -> Record

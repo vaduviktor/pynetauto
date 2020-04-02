@@ -1,0 +1,26 @@
+NFV-FRU> show sffs
++---- SERVICE FUNCTION CHAIN ---+
+| Sff Name           | Sff Mode |
++--------------------+----------+
+| Vrouter_WANside_vl | vpls     |
+| unused_vrouter_ha  | vpls     |
+| sfc_vrouter_vnf1   | vpls     |
+| unused_vrouter_lan | vpls     |
+| wan4a              | vpls     |
+| lan_1              | vpls     |
+| wan2               | vpls     |
+| wan4               | vpls     |
+| wan3               | vpls     |
+| ha                 | vpls     |
+| wan1_1             | vpls     |
+| wan3a              | vpls     |
+| ha2                | vpls     |
+| lan1               | vpls     |
+| lan                | vpls     |
+| itsp               | vpls     |
+| wan2_1             | vpls     |
+| sfc_vrouter_vnf1_1 | vpls     |
+| TEST               | vpws     |
+| vrouter-wan-fd     | vpws     |
++--------------------+----------+
+NFV-FRU>

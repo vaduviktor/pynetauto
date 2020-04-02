@@ -1,0 +1,8 @@
+NFV-FRU> show nfvi sfs
++--- SERVICE FUNCTION ---+
+| SF Name      | Status  |
++--------------+---------+
+| vce_3_2_0_v2 | Running |
+| vrouter      | Running |
++--------------+---------+
+NFV-FRU>

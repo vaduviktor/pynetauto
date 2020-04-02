@@ -1,0 +1,8 @@
+Value File_Name (\S+)
+Value Download_status (\S+)
+Value Download_Progress (\S+)
+Value Upload_status (\S+)
+Value Upload_Progress (\S+)
+
+Start
+ ^\|\s+${File_Name}\s+\|\s+${Download_status}\s+\|\s+${Download_Progress}\s+\|\s+${Upload_status}\s+\|\s+${Upload_Progress}\s+\| -> Record

@@ -1,0 +1,10 @@
+Value Version (\d{4}\w)
+Value Description (.*)
+Value Built_On (.*)
+Value Uptime (.*)
+
+Start
+ ^Version:\s+${Version}
+ ^Description:\s+${Description}
+ ^Built on:\s+${Built_On}
+ ^Uptime:\s+${Uptime} -> Record

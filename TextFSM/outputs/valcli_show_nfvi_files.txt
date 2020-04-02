@@ -1,0 +1,15 @@
+NFV-FRU> show nfvi files
++------------------------------------- NFVI FILE REPORT -------------------------------------+
+| File Name          | Download Status | Download Progress | Upload Status | Upload Progress |
++--------------------+-----------------+-------------------+---------------+-----------------+
+| vyatta_18_01       | downloaded      | 100%              | N/A           | N/A             |
+| fgt_5_6_4          | downloaded      | 100%              | N/A           | N/A             |
+| pa_8_1_0           | downloaded      | 100%              | N/A           | N/A             |
+| rb_9_7_1           | downloaded      | 100%              | N/A           | N/A             |
+| sbc_7_2_158        | downloaded      | 100%              | N/A           | N/A             |
+| csr_16_06_04       | downloaded      | 100%              | N/A           | N/A             |
+| vsrx_15_1_x49_d140 | downloaded      | 100%              | N/A           | N/A             |
+| spk_8_1_9          | downloaded      | 100%              | N/A           | N/A             |
+| vce_3_2_0          | downloaded      | 100%              | N/A           | N/A             |
++--------------------+-----------------+-------------------+---------------+-----------------+
+NFV-FRU>

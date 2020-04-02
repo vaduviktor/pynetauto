@@ -1,0 +1,14 @@
+Value CPU_Total (\S+)
+Value CPU_Available (\S+)
+Value MEM_Total (\S+)
+Value MEM_Available (\S+)
+Value Disk_Total (\S+)
+Value Disk_Available (\S+)
+
+Start
+ ^\|   Cpu Total.*\|\s+${CPU_Total}\s+\|
+ ^\|   Cpu Available.*\|\s+${CPU_Available}\s+\|
+ ^\|   Mem Total.*\|\s+${MEM_Total}\s+\|
+ ^\|   Mem Available.*\|\s+${MEM_Available}\s+\|
+ ^\|   Disk Total.*\|\s+${Disk_Total}\s+\|
+ ^\|   Disk Available.*\|\s+${Disk_Available}\s+\| -> Record

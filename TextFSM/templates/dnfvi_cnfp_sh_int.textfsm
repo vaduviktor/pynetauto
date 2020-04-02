@@ -1,0 +1,17 @@
+Value dev (\d+)
+Value ifno (\d+)
+Value index (\d+)
+Value iface_name (\S+)
+Value drv_name (\S+)
+Value type (\S+)
+Value role (\w+)
+Value rate (.+s)
+Value duplex (\w+)
+Value link (\w+)
+Value rx (\d+)
+Value tx (\d+)
+Value rx_error (\d+)
+Value tx_error (\d+)
+
+Start
+ ^\s${dev}\s+${ifno}\s+${index}\s+${iface_name}\s+${drv_name}\s+${type}\s+${role}\s${rate}\s+${duplex}\s+${link}\s+${rx}\s+${tx}\s+${rx_error}\s+${tx_error} -> Record

@@ -1,0 +1,13 @@
+LABCNDEVICE04S> port xcvr show
+
++----+-----+-----+---------Transceiver-Status------------+-----+----------------+----+
+|    |Admin| Oper|                                       |Ciena|Ether Medium &  |Diag|
+|Port|State|State|      Vendor Name & Part Number        | Rev |Connector Type  |Data|
++----+-----+-----+---------------------------------------+-----+----------------+----+
+|1   |Empty|     |                                       |     |                |    |
+|2   |Empty|     |                                       |     |                |    |
+|3   |Empty|     |                                       |     |                |    |
+|4   |Empty|     |                                       |     |                |    |
+|5   |Empty|     |                                       |     |                |    |
+|6   |Empty|     |                                       |     |                |    |
++----+-----+-----+---------------------------------------+-----+----------------+----+
