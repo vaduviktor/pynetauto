@@ -3,7 +3,8 @@ from netmiko import ConnectHandler, redispatch
 import requests
 import json
 import sys
-
+from ncclient import manager
+import xmltodict
 """
 Helper module for saos, Blue Planet, dnfvi 
 
@@ -20,18 +21,71 @@ class Saos:
         'port': 22
     }
 
-    def __init__(self, dev_ip, username, password, port=22, method="ssh"):
+    # wip
+    xpath = {
+        "port_status": '',
+        "xcvr_status": '',
+        "module_shwo": '',
+        "config": '',
+        "interfaces": '//interfaces/interface'
+    }
+
+    _net_connect = ''
+    _netconf_conn = ''
+
+    def __init__(self, dev_ip, username, password, method="ssh"):
         self._dev["ip"] = dev_ip
         self._dev["username"] = username
         self._dev["password"] = password
-        self._dev["port"] = port
-        self._method = method  # ssh or netconf .. to be implemented
+        self._method = method  # ssh or netconf
+        if self._method == "ssh":
+            self._connect_ssh()
+        else:
+            self._connect_netconf()
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        try:
+            if self._method == 'ssh':
+                self._net_connect.disconnect()
+                print('ssh session closed')
+            else:
+                self._netconf_conn.close_session()
+                print('Netconf session closed')
+        except:
+            print("No ssh or netconf sessions established")
+            print(f"Exception {sys.exc_info()} occured")
+        return
+
+    def _connect_netconf(self):
+        try:
+            self._netconf_conn = manager.connect(host=self._dev["ip"], username=self._dev["username"],
+                                                 password=self._dev["password"], hostkey_verify=False, timeout=10)
+        except:
+            print(f"Exception {sys.exc_info()} occured")
+        return
+
+    def _netconf_get(self, xpath: str) -> dict:
+        try:
+            res = self._netconf_conn.get(filter=("xpath", f"{xpath}"))
+            dict_res = xmltodict.parse(res.xml)
+        except:
+            dict_res = {}
+
+        return dict_res
+
+    def _connect_ssh(self):
+        try:
+            self._net_connect = ConnectHandler(**self._dev)
+        except:
+            print(f"Exception {sys.exc_info()} occured")
+        return
 
     def _send_cmd(self, cmd: str) -> str:
-        net_connect = ConnectHandler(**self._dev)
-
         try:
-            res = net_connect.send_command(cmd)
+            res = self._net_connect.send_command(cmd)
         except:
             res = f"Exception {sys.exc_info()[0]} occured"
 
@@ -71,6 +125,15 @@ class Dnfvi:
         "Files": "/rest/vnf/file_mgmt/show/formatted"
     }
 
+    xpath = {
+        "SFF": '//sfs/sf',
+        'SF': '//sffs/sff',
+        "nfvi": '/nfvi/nfvi-state',
+        "sw_state": '/software-state',
+        "system_state": '/system-state',
+        "licence_state": '/license-management-state'
+    }
+
     # for netmiko
     _dev = {
         'device_type': 'terminal_server',
@@ -81,6 +144,7 @@ class Dnfvi:
     }
 
     _connection = ''
+    _conn_netconf = ''
     _host = False
     _auth_token = ''
     _method = 'ssh'
@@ -95,6 +159,7 @@ class Dnfvi:
         REST : dev.Dnfvi(ip, username, pass, method='REST')
         cn_core_host : dev.Dnfvi(ip, username, pass, host=True)
         ui/valcli : dev.Dnfvi(ip, username, pass)
+        NETCONF : dev.Dnfvi(ip, username, pass, method='netconf')
 
 
         """
@@ -110,6 +175,9 @@ class Dnfvi:
         if self._method == 'REST':
             self._auth_token = self._get_auth_token()
             self._host = False
+        elif self._method == "netconf":
+            self._connect_netconf()
+            self._host = False
         else:
             try:
                 self._connect(self._host)
@@ -117,10 +185,20 @@ class Dnfvi:
                 print("Error connecting")
 
     def __del__(self):
+        self.close()
+
+    def close(self):
         try:
-            self._connection.disconnect()
+            if self._method == 'ssh':
+                self._connection.disconnect()
+                print('ssh session closed')
+            else:
+                self._conn_netconf.close_session()
+                print('Netconf session closed')
         except:
-            print("No ssh session established")
+            print("No ssh or netconf sessions established")
+            print(f"Exception {sys.exc_info()} occured")
+        return
 
     def _send_cmd(self, cmd):  # wip
         if self._host:
@@ -131,6 +209,23 @@ class Dnfvi:
         else:
             res = self._connection.send_command(cmd)
         return res
+
+    def _connect_netconf(self):
+        try:
+            self._conn_netconf = manager.connect(host=self._dev["ip"], username=self._dev["username"],
+                                                 password=self._dev["password"], hostkey_verify=False, timeout=10)
+        except:
+            print(f"Exception {sys.exc_info()} occured")
+        return
+
+    def _netconf_get(self, xpath: str) -> dict:
+        try:
+            res = self._conn_netconf.get(filter=("xpath", f"{xpath}"))
+            dict_res = xmltodict.parse(res.xml)
+        except:
+            dict_res = {}
+
+        return dict_res
 
     def _connect(self, host=False) -> None:
         """
@@ -210,6 +305,8 @@ class Dnfvi:
             res = "ERROR, object initialized as host"
         elif self._method == "REST":
             res = "Not implemented yet"
+        elif self._method == "netconf":
+            res = self._netconf_get(self.xpath["nfvi"])
         elif self._tmp == "linux":
             self._connection.send_command_timing("yp-shell")
             res = self._connection.send_command_timing("sget /nfvi")
@@ -223,6 +320,8 @@ class Dnfvi:
             res = "ERROR, object initialized as host"
         elif self._method == "REST":
             res = self.rest_apicall("GET", self.api_calls["VNFs"])
+        elif self._method == "netconf":
+            res = self._netconf_get(self.xpath["SFS"])
         elif self._tmp == "linux":
             self._connection.send_command_timing("yp-shell")
             res = self._connection.send_command_timing("sget /sfs")
@@ -236,6 +335,8 @@ class Dnfvi:
             res = "ERROR, object initialized as host"
         elif self._method == "REST":
             res = self.rest_apicall("GET", self.api_calls["SFFS"])
+        elif self._method == "netconf":
+            res = self._netconf_get(self.xpath["SFFS"])
         elif self._tmp == "linux":
             self._connection.send_command_timing("yp-shell")
             res = self._connection.send_command_timing("sget /sffs")
