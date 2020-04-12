@@ -69,8 +69,8 @@ def get_command(task, opt):
     print(f' For device {task.host} run : {command}')
 
     if task.host.groups[0] == 'DNFVI':
-        dev = Dnfvi(task.host.hostname, task.host.username, task.host.password)
         try:
+            dev = Dnfvi(task.host.hostname, task.host.username, task.host.password)
             res = dev._send_cmd(command)
         except:
             res = f"Exception {sys.exc_info()} occurred"
