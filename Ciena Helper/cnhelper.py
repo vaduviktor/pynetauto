@@ -43,9 +43,6 @@ class Saos:
         else:
             self._connect_netconf()
 
-    def __del__(self):
-        self.close()
-
     def close(self):
         try:
             if self._method == 'ssh':
@@ -183,9 +180,6 @@ class Dnfvi:
                 self._connect(self._host)
             except:
                 print("Error connecting")
-
-    def __del__(self):
-        self.close()
 
     def close(self):
         try:
