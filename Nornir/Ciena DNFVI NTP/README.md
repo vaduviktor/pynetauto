@@ -1,5 +1,5 @@
 
-####Collect inventory from BP Orchestrator, feed it to Nornir, run NTP check on all inventory devices using various methods and correct NTP settings if needed
+###Collect inventory from BP Orchestrator, feed it to Nornir, run NTP check on all inventory devices using various methods and correct NTP settings if needed
 
 
 1 ) Install Python 3.7
