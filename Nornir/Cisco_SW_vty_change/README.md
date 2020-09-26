@@ -1,5 +1,5 @@
 
-###Collect inventory from Excel file, feed it to Nornir, run checks on all devices and correct vty settings if needed
+### Collect inventory from Excel file, feed it to Nornir, run checks on all devices and correct vty settings if needed
 
 1 ) Install Python 3.7+
 
