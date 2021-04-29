@@ -423,6 +423,7 @@ class Dnfvi:
         except (TypeError, KeyError):
             tok = 'None'
             print(res)
+            raise KeyError(res)
 
         return tok
 
@@ -516,6 +517,7 @@ class Bpo:
         except (TypeError, KeyError):
             tok = 'None'
             print(token)
+            raise KeyError(token)
 
         return tok
 
