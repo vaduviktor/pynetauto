@@ -1,0 +1,11 @@
+hostname {{device.location}}{% for iface in device.interfaces.values() %}
+interface {{ iface.name }}
+  description {{ iface.desc }}{% if 'swichport' in iface.type %}
+  switchport
+  switchport mode trunk
+  switchport trunk allowed vlan all{%else%}
+  ip address {{iface.IP}}{%endif%}
+  no shutdown
+  exit{% endfor %}
+{% for route in device.routes.values()%}ip route {{route.prefix}} {{route.next}}
+{% endfor %}snmp-server community {{device.snmp_comunity}}
