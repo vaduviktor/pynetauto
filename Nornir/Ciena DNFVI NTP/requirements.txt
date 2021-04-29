@@ -1,0 +1,9 @@
+nornir==2.4.0
+netmiko==3.2.0
+openpyxl==3.0.3
+ipython==7.11.1
+ipdb==0.13.2
+scrapli
+scrapli[paramiko]
+scrapli[ssh2]
+ncclient
