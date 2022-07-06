@@ -9,7 +9,7 @@ fastapi==0.63.0
 future==0.18.2
 h11==0.12.0
 Jinja2==2.11.3
-lxml==4.6.3
+lxml==4.9.1
 MarkupSafe==1.1.1
 mypy-extensions==0.4.3
 ntc-templates==1.7.0
